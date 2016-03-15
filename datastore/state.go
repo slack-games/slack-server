@@ -17,6 +17,7 @@ type State struct {
 	Mode         string    `db:"mode"`
 	FirstUserID  string    `db:"first_user_id"`
 	SecondUserID string    `db:"second_user_id"`
+	ParentID     string    `db:"parent_state_id"`
 	Created      time.Time `db:"created_at"`
 }
 
@@ -25,14 +26,15 @@ func (s State) String() string {
 		s.StateID, s.State, s.TurnID, s.Mode, s.FirstUserID, s.SecondUserID, s.Created)
 }
 
-func CreateStateFromBoard(game *tictactoe.TicTacToe, turnID, firstUserID, secondUserID string) *State {
+func CreateStateFromBoard(game *tictactoe.TicTacToe, state State) *State {
 
 	return &State{
 		State:        game.GetBoardAsString(),
-		TurnID:       turnID,
+		TurnID:       state.TurnID,
 		Mode:         fmt.Sprintf("%s", game.State),
-		FirstUserID:  firstUserID,
-		SecondUserID: secondUserID,
+		FirstUserID:  state.FirstUserID,
+		SecondUserID: state.SecondUserID,
+		ParentID:     state.StateID,
 		Created:      time.Now(),
 	}
 }
@@ -71,7 +73,7 @@ func GetState(db *sqlx.DB, id string) (State, error) {
 	state := State{}
 
 	// TODO: switch from * to field names
-	err := db.Get(&state, `SELECT * FROM gms.states WHERE state_id=$1 LIMIT 1`, id)
+	err := db.Get(&state, `SELECT * FROM ttt.states WHERE state_id=$1 LIMIT 1`, id)
 	return state, err
 }
 
@@ -80,7 +82,7 @@ func GetUserLastState(db *sqlx.DB, id string) (State, error) {
 
 	query := `
 		SELECT *
-		FROM gms.states
+		FROM ttt.states
 		WHERE
 			first_user_id=$1 OR second_user_id=$1
 		ORDER BY created_at DESC LIMIT 1;
@@ -92,10 +94,10 @@ func GetUserLastState(db *sqlx.DB, id string) (State, error) {
 
 func NewState(db *sqlx.DB, state State) (string, error) {
 	sql := `
-		INSERT INTO gms.states
-			(state, turn, mode, first_user_id, second_user_id)
+		INSERT INTO ttt.states
+			(state, turn, mode, first_user_id, second_user_id, parent_state_id)
 		VALUES
-			(:state, :turn, :mode, :first_user_id, :second_user_id)
+			(:state, :turn, :mode, :first_user_id, :second_user_id, :parent_state_id)
 		RETURNING state_id
 	`
 	var id string

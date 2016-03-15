@@ -51,7 +51,7 @@ func MoveCommand(db *sqlx.DB, userID string, spot uint8) slack.ResponseMessage {
 		log.Println("Should be able to make move", freeSpot)
 	}
 
-	newState := datastore.CreateStateFromBoard(game, state.TurnID, state.FirstUserID, state.SecondUserID)
+	newState := datastore.CreateStateFromBoard(game, state)
 	stateID, err := datastore.NewState(db, *newState)
 	if err != nil {
 		log.Println("Could not save the new state", err)

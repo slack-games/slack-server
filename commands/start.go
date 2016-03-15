@@ -30,6 +30,7 @@ func StartCommand(db *sqlx.DB, userID string) slack.ResponseMessage {
 				Mode:         "Start",
 				FirstUserID:  "U000000000",
 				SecondUserID: userID,
+				ParentID:     "00000000-0000-0000-0000-000000000000",
 				Created:      time.Now(),
 			}
 
@@ -59,6 +60,7 @@ func StartCommand(db *sqlx.DB, userID string) slack.ResponseMessage {
 			Mode:         "Start",
 			FirstUserID:  "U000000000",
 			SecondUserID: userID,
+			ParentID:     "00000000-0000-0000-0000-000000000000",
 			Created:      time.Now(),
 		}
 

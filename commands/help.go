@@ -3,7 +3,7 @@ package commands
 import "github.com/riston/slack-server/slack"
 
 const helpText = `
-To start a new game type */game start*. Now you are playing against the bot.
+To start a new game type */game start*. Now you'r opponent is a bot.
 Make first move by typing */game move cell-number* - cell-number is from 1 to 9.
 Example move would be */game move 1*.
 `
