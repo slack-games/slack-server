@@ -21,10 +21,11 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/justinas/alice"
 	_ "github.com/lib/pq"
-	"github.com/riston/slack-server/commands"
+	"github.com/riston/slack-client"
 	"github.com/riston/slack-server/datastore"
-	drawBoard "github.com/riston/slack-server/draw"
-	"github.com/riston/slack-server/slack"
+	"github.com/riston/slack-tictactoe/commands"
+	tttdatastore "github.com/riston/slack-tictactoe/datastore"
+	drawBoard "github.com/riston/slack-tictactoe/draw"
 )
 
 var index *template.Template
@@ -163,13 +164,13 @@ func (c *AppContext) stateImageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	state, err := datastore.GetState(c.db, id)
+	state, err := tttdatastore.GetState(c.db, id)
 	if err != nil {
 		http.Error(w, "Could not get the state", 404)
 		return
 	}
 
-	ttt := datastore.CreateTicTacToeBoard(state)
+	ttt := tttdatastore.CreateTicTacToeBoard(state)
 
 	img := drawBoard.Draw(ttt)
 	err = png.Encode(w, img)
