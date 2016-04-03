@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS gms.users (
     modified_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+-- Tic-Tac-Toe
 -- NB! Make sure to remove this
 DROP TYPE IF EXISTS ttt.mode CASCADE;
 CREATE TYPE ttt.mode AS ENUM ('Start', 'Win', 'Draw', 'GameOver', 'Turn', 'Unkown');
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS ttt.states (
     state_id UUID PRIMARY KEY UNIQUE DEFAULT gen_random_uuid(),
     state TEXT,
     turn TEXT REFERENCES gms.users (user_id),
-    mode gms.mode,
+    mode ttt.mode,
     first_user_id TEXT REFERENCES gms.users (user_id),
     second_user_id TEXT REFERENCES gms.users (user_id),
     parent_state_id UUID DEFAULT '00000000-0000-0000-0000-000000000000',
@@ -45,16 +46,18 @@ CREATE TABLE IF NOT EXISTS ttt.states (
 );
 
 
+-- Hangman
 DROP TYPE IF EXISTS hng.mode CASCADE;
-CREATE TYPE ttt.mode AS ENUM ('Win', 'GameOver', 'Turn', 'Unkown');
+CREATE TYPE hng.mode AS ENUM ('Win', 'GameOver', 'Turn', 'Unkown');
 
--- DROP TABLE IF EXISTS ttt.states;
+DROP TABLE IF EXISTS hng.states;
 CREATE TABLE IF NOT EXISTS hng.states (
     state_id UUID PRIMARY KEY UNIQUE DEFAULT gen_random_uuid(),
     word TEXT NOT NULL,
-    offers TEXT,
+    guess TEXT NOT NULL,
+    current TEXT NOT NULL,
+    mode hng.mode,
     user_id TEXT REFERENCES gms.users (user_id),
-    mode gms.mode,
     parent_state_id UUID DEFAULT '00000000-0000-0000-0000-000000000000',
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );

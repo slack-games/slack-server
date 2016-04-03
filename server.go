@@ -22,10 +22,9 @@ import (
 	"github.com/justinas/alice"
 	_ "github.com/lib/pq"
 	"github.com/riston/slack-client"
+	hngcmd "github.com/riston/slack-hangman/commands"
 	"github.com/riston/slack-server/datastore"
-	"github.com/riston/slack-tictactoe/commands"
-	tttdatastore "github.com/riston/slack-tictactoe/datastore"
-	drawBoard "github.com/riston/slack-tictactoe/draw"
+	tttcmd "github.com/riston/slack-tictactoe/commands"
 )
 
 var index *template.Template
@@ -37,6 +36,7 @@ var oauthState string
 type Config struct {
 	DBUrl      string
 	Port       string
+	FontPath   string
 	SlackToken string
 	ClientID   string
 	SecretKey  string
@@ -82,23 +82,27 @@ func (c *AppContext) isGameCommandHandler(next http.Handler) http.Handler {
 	})
 }
 
-func (c *AppContext) gameHandler(w http.ResponseWriter, r *http.Request) {
+func (c *AppContext) debugFormValues(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Show keys for debugging
+		log.Println("> Form debug starts here")
+		for key, value := range r.Form {
+			log.Printf("\tkey: %s value: %s\n", key, value)
+		}
+		log.Println("> Headers ends here")
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (c *AppContext) tictactoeGameHandler(w http.ResponseWriter, r *http.Request) {
 	var message slack.ResponseMessage
 
 	// Authentication, check the token, team id and user id
 	text := r.PostFormValue("text")
-
 	domain := r.PostFormValue("team_domain")
 	teamID := r.PostFormValue("team_id")
 	userID := r.PostFormValue("user_id")
 	name := r.PostFormValue("user_name")
-
-	log.Println("> Headers start here")
-	// Show keys for debugging
-	for key, value := range r.Form {
-		log.Printf("\tkey: %s value: %s\n", key, value)
-	}
-	log.Println("> Headers ends here")
 
 	moveRegexp, _ := regexp.Compile("^move (\\d)$")
 
@@ -107,33 +111,33 @@ func (c *AppContext) gameHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("Could not save or get the user", userID, err)
 	}
 
-	fmt.Println("Res", user)
+	fmt.Println("User", user)
 
 	switch text {
 	case "start":
 		// Starts the new game
-		message = commands.StartCommand(c.db, userID)
+		message = tttcmd.StartCommand(c.db, userID)
 
 	case "current":
 		// Return the current game state, with information of previous move
 		// and also with current whose turn it is
-		message = commands.CurrentCommand(c.db, userID)
+		message = tttcmd.CurrentCommand(c.db, userID)
 
 	case "stats":
 		// Get the players stats
 		// Not implemented yet
 	case "help":
 		// Trigger also the command help
-		message = commands.HelpCommand()
+		message = tttcmd.HelpCommand()
 
 	case "ping":
 		// Test if the commands are responding
-		message = commands.PingCommand()
+		message = tttcmd.PingCommand()
 
 	default:
 		// Show the help message, also list all possible commands available
 		// Did not found your command, did you mean this ?
-		message = commands.HelpCommand()
+		message = tttcmd.HelpCommand()
 	}
 
 	// Make turn on board and get back the response
@@ -143,7 +147,49 @@ func (c *AppContext) gameHandler(w http.ResponseWriter, r *http.Request) {
 		strNumber := moveRegexp.FindStringSubmatch(text)[1]
 		moveTo, _ := strconv.ParseInt(strNumber, 10, 8)
 
-		message = commands.MoveCommand(c.db, userID, uint8(moveTo))
+		message = tttcmd.MoveCommand(c.db, userID, uint8(moveTo))
+	}
+
+	sendResponse(w, message)
+}
+
+func (c *AppContext) hangmanGameHandler(w http.ResponseWriter, r *http.Request) {
+	var message slack.ResponseMessage
+
+	// Authentication, check the token, team id and user id
+	text := r.PostFormValue("text")
+	domain := r.PostFormValue("team_domain")
+	teamID := r.PostFormValue("team_id")
+	userID := r.PostFormValue("user_id")
+	name := r.PostFormValue("user_name")
+
+	guessRegexp, _ := regexp.Compile("^guess ([a-z])$")
+
+	// TODO: Move the user get and create to middleware ?
+	user, err := datastore.GetOrSaveNew(c.db, userID, teamID, name, domain)
+	if err != nil {
+		log.Fatalln("Could not save or get the user", userID, err)
+	}
+	fmt.Println("User", user)
+
+	switch text {
+	case "start":
+		// Starts the new game
+		message = hngcmd.StartCommand(c.db, userID)
+	case "current":
+		// Return the current game state, with information of previous move
+		message = hngcmd.CurrentCommand(c.db, userID)
+	case "ping":
+		// Starts the new game
+		message = hngcmd.PingCommand()
+	}
+
+	// Make turn on board and get back the response
+	if guessRegexp.MatchString(text) {
+		// Second element hold character
+		guess := guessRegexp.FindStringSubmatch(text)[1]
+
+		message = hngcmd.GuessCommand(c.db, userID, rune(guess[0]))
 	}
 
 	sendResponse(w, message)
@@ -160,20 +206,34 @@ func sendResponse(w http.ResponseWriter, message slack.ResponseMessage) {
 	}
 }
 
-func (c *AppContext) stateImageHandler(w http.ResponseWriter, r *http.Request) {
+func (c *AppContext) tictactoeImageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	state, err := tttdatastore.GetState(c.db, id)
+	image, err := tttcmd.GetGameImage(c.db, id)
 	if err != nil {
 		http.Error(w, "Could not get the state", 404)
 		return
 	}
 
-	ttt := tttdatastore.CreateTicTacToeBoard(state)
+	err = png.Encode(w, image)
+	if err != nil {
+		http.Error(w, "Could not save the image", 500)
+		return
+	}
+}
 
-	img := drawBoard.Draw(ttt)
-	err = png.Encode(w, img)
+func (c *AppContext) hangmanImageHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	image, err := hngcmd.GetGameImage(c.db, id)
+	if err != nil {
+		http.Error(w, "Could not get the state", 404)
+		return
+	}
+
+	err = png.Encode(w, image)
 	if err != nil {
 		http.Error(w, "Could not save the image", 500)
 		return
@@ -249,10 +309,17 @@ func Router(context AppContext) *mux.Router {
 
 	// Game command handling path
 	gameMiddleware := alice.New(context.slackTokenHandler, context.isGameCommandHandler)
-	r.Handle("/game", gameMiddleware.ThenFunc(context.gameHandler))
+	r.Handle("/game/tictactoe", gameMiddleware.ThenFunc(context.tictactoeGameHandler))
 
+	hangmanGameMiddleware := alice.New(context.debugFormValues)
 	// Id example 95cccffc-de50-4cd8-9ac7-74b52c6f306e
-	r.HandleFunc("/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}", context.stateImageHandler)
+	r.HandleFunc("/game/tictactoe/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}",
+		context.tictactoeImageHandler)
+
+	r.Handle("/game/hangman", hangmanGameMiddleware.ThenFunc(context.hangmanGameHandler))
+	r.HandleFunc("/game/hangman/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}",
+		context.hangmanImageHandler)
+
 	return r
 }
 
@@ -270,6 +337,7 @@ func init() {
 	config = Config{
 		DBUrl:      DBUrl,
 		Port:       port,
+		FontPath:   os.Getenv("FONT_PATH"),
 		SlackToken: os.Getenv("APP_TOKEN"),
 		ClientID:   os.Getenv("CLIENT_ID"),
 		SecretKey:  os.Getenv("SECRET_KEY"),
