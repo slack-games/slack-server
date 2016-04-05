@@ -8,7 +8,7 @@ import (
 )
 
 type Team struct {
-	TeamID      string    `db:"id"`
+	TeamID      string    `db:"team_id"`
 	Name        string    `db:"name"`
 	Domain      string    `db:"domain"`
 	EmailDomain string    `db:"email_domain"`

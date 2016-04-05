@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"image/png"
@@ -277,22 +278,35 @@ func (c *AppContext) handleSlackCallback(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	_, err = datastore.NewTeam(c.db, datastore.Team{
-		TeamID:      response.Team.TeamID,
-		Name:        response.Team.Name,
-		Domain:      response.Team.Domain,
-		EmailDomain: response.Team.EmailDomain,
-		Created:     time.Now(),
-		Modified:    time.Now(),
-	})
-
+	_, err = datastore.GetTeam(c.db, response.Team.TeamID)
 	if err != nil {
-		log.Printf("Failed to save the team result %v\n", err)
-		http.Redirect(w, r, "/login/fail", http.StatusTemporaryRedirect)
-		return
+		// No result found, save team information
+		if err == sql.ErrNoRows {
+			_, err = datastore.NewTeam(c.db, datastore.Team{
+				TeamID:      response.Team.TeamID,
+				Name:        response.Team.Name,
+				Domain:      response.Team.Domain,
+				EmailDomain: response.Team.EmailDomain,
+				Created:     time.Now(),
+				Modified:    time.Now(),
+			})
+
+			if err != nil {
+				log.Printf("Failed to save the team result %v\n", err)
+				http.Redirect(w, r, "/login/fail", http.StatusTemporaryRedirect)
+				return
+			}
+			log.Println("New team created")
+
+		} else {
+			log.Printf("Could not find or save the team data %v\n", err)
+			log.Println(err)
+			http.Redirect(w, r, "/login/fail", http.StatusTemporaryRedirect)
+			return
+		}
 	}
 
-	log.Println("Team saved ", response.Team)
+	log.Println("Team ", response.Team)
 
 	http.Redirect(w, r, "/login/success", http.StatusTemporaryRedirect)
 }
