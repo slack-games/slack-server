@@ -1,14 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>{{ template "title" . }}</title>
-    </head>
-    <body>
-        <section id="contents">
-            {{ template "content" . }}
-        </section>
-        <footer id="footer">
-            My Cool Guestbook 2000 © me forever
-        </footer>
-    </body>
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>{{ template "title" . }}</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="./asset/css/normalize.css">
+  <link rel="stylesheet" href="./asset/css/skeleton.css">
+  <link rel="stylesheet" href="./asset/css/style.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+      {{ template "content" . }}
+
+    <footer>
+      <p>You reached the end of web page &copy; 2016 Risto Novik</p>
+    </footer>
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
 </html>

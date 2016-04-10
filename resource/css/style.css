@@ -1,0 +1,25 @@
+
+#hero {
+    background-color: rgba(167, 189, 177, 0.14);
+    border-radius: 1rem;
+    padding: 2.5rem;
+}
+
+section {
+    margin-top: 5%;
+}
+
+.demo-button {
+    background: #4BD045;
+    color: #F9F9F9;
+}
+
+.add-button {
+    background: #4BD045;
+    color: #F9F9F9;
+}
+
+.u-max-full-width {
+    max-width: 100%;
+    box-sizing: border-box;
+}

@@ -1,11 +1,85 @@
-{{ define "title" }}Guestbook{{ end }}
+{{ define "title" }}Slack games{{ end }}
 
 {{ define "content" }}
-    <h1>Guestbook</h1>
+    <section id="hero">
+      <div class="row">
+        <h1>Slack gaming</h1>
+      </div>
+      <div class="row">
+        <div class="one-half column">
+          <h4>Introduction</h4>
 
-    <p>Hello, and welcome to my guestbook, because it's 1997!</p>
+          <p>
+            Is it possible to play games in Slack? It is now with Brain games
+            and collection of multiple turn based games.
+          </p>
+          <p>
+            The idea is to introduce more turn based games in chatting applications. In future the plan is to
+            have also multiplayer games. Want to contribute, share feedback and ideas come
+            and join the <a href="#">slack channel</a>.
+          </p>
+        </div>
+        <div class="one-half column">
+          <h4>Getting started</h4>
 
-    <ul class="guests">
-        <li>...</li>
-    </ul>
+          <p>Join our Slack channel to try the demo now</p>
+          <a class="button demo-button" href="#">Start a demo</a>
+
+          <p>To add games on your Slack team</p>
+          <a class="button add-button" href="login/slack">Add to my Slack team</a>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="game">
+      <div class="row">
+        <div class="one-half column">
+          <h4>Tic Tac Toe</h4>
+
+          <p>
+            Tic-tac-toe (also known as Noughts and crosses or Xs and Os) is a paper-and-pencil game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row wins the game. - <a href="https://en.wikipedia.org/wiki/Tic-tac-toe">Wikipedia</a>
+          </p>
+
+          <p>Quick intro how to play this in Slack version:</p>
+          <ul>
+            <li>Start a game <code>/ttt start</code></li>
+            <li>To make your move on cell[1-9] <code>/ttt move 5</code>, this will make move in the center spot</li>
+            <li>The AI makes the move after you and returns the current game state</li>
+            <li>If you want to query the current game state <code>/ttt current</code></li>
+            <li>To get info about available commands <code>/ttt help</code></li>
+          </ul>
+        </div>
+        <div class="one-half column">
+          <img class="u-max-full-width" src="./asset/images/tictactoe.png" width="350" height="350" />
+        </div>
+      </div>
+    </section>
+
+    <section id="game">
+      <div class="row">
+        <div class="one-half column">
+          <img class="u-max-full-width" src="./asset/images/hangman.png" width="350" height="350" />
+        </div>
+        <div class="one-half column">
+          <h4>Hangman</h4>
+
+          <p>
+            Hangman is a paper and pencil guessing game for two or more players. One player thinks of a word, phrase or sentence and the other tries to guess it by suggesting letters or numbers, within a certain number of guesses. - <a href="https://en.wikipedia.org/wiki/Hangman_(game)">Wikipedia</a>
+          </p>
+
+          <p>Quick intro how to play this in Slack version:</p>
+          <ul>
+            <li>Start a game <code>/hng start</code></li>
+            <li>To make your guess <code>/hng guess a</code>(possible values are between a-z)</li>
+            <li>If you want to query the current game state <code>/hng current</code></li>
+            <li>To get info about available commands <code>/hng help</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>You reached the end of web page &copy; 2016 Risto Novik</p>
+    </footer>
 {{ end }}

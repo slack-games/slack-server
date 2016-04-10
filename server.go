@@ -28,7 +28,7 @@ import (
 	tttcmd "github.com/riston/slack-tictactoe/commands"
 )
 
-var index *template.Template
+var index, failTemplate, successTemplate *template.Template
 var oauthConf *oauth2.Config
 var config Config
 var oauthState string
@@ -70,9 +70,9 @@ func (c *AppContext) isGameCommandHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		command := r.PostFormValue("command")
 
-		if command != "/game" {
+		if command != "/ttt" {
 			sendResponse(w, slack.ResponseMessage{
-				Text:        "Make sure you have command set to /game",
+				Text:        "Make sure you have command set to /ttt",
 				Attachments: []slack.Attachment{},
 			})
 			return
@@ -247,6 +247,18 @@ func (c *AppContext) handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (c *AppContext) handleLoginSuccess(w http.ResponseWriter, r *http.Request) {
+	if err := successTemplate.Execute(w, nil); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func (c *AppContext) handleLoginFail(w http.ResponseWriter, r *http.Request) {
+	if err := failTemplate.Execute(w, nil); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func (c *AppContext) handleSlackLogin(w http.ResponseWriter, r *http.Request) {
 	url := oauthConf.AuthCodeURL(oauthState, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
@@ -317,6 +329,9 @@ func Router(context AppContext) *mux.Router {
 
 	r.HandleFunc("/", context.handleIndex)
 
+	r.HandleFunc("/login/success", context.handleLoginSuccess)
+	r.HandleFunc("/login/fail", context.handleLoginFail)
+
 	// Login handlers
 	r.HandleFunc("/login/slack", context.handleSlackLogin)
 	r.HandleFunc("/login/slack/callback", context.handleSlackCallback)
@@ -333,6 +348,9 @@ func Router(context AppContext) *mux.Router {
 	r.Handle("/game/hangman", hangmanGameMiddleware.ThenFunc(context.hangmanGameHandler))
 	r.HandleFunc("/game/hangman/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}",
 		context.hangmanImageHandler)
+
+	static := http.StripPrefix("/asset/", http.FileServer(http.Dir("./resource/")))
+	r.PathPrefix("/asset/").Handler(static)
 
 	return r
 }
@@ -369,6 +387,15 @@ func init() {
 	index = template.Must(template.ParseFiles(
 		"templates/layout.html",
 		"templates/index.html",
+	))
+
+	successTemplate = template.Must(template.ParseFiles(
+		"templates/layout.html",
+		"templates/success.html",
+	))
+	failTemplate = template.Must(template.ParseFiles(
+		"templates/layout.html",
+		"templates/fail.html",
 	))
 }
 
