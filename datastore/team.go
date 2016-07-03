@@ -35,7 +35,7 @@ func NewTeam(db *sqlx.DB, team Team) (sql.Result, error) {
 		INSERT INTO gms.teams
 			(team_id, name, domain, email_domain)
 		VALUES
-			(:id, :name, :domain, :email_domain)
+			(:team_id, :name, :domain, :email_domain)
 	`
 	return db.NamedExec(sql, team)
 }

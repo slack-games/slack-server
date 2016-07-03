@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"regexp"
 	"strconv"
@@ -22,10 +23,10 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/justinas/alice"
 	_ "github.com/lib/pq"
-	"github.com/riston/slack-client"
-	hngcmd "github.com/riston/slack-hangman/commands"
-	"github.com/riston/slack-server/datastore"
-	tttcmd "github.com/riston/slack-tictactoe/commands"
+	"github.com/slack-games/slack-client"
+	hngcmd "github.com/slack-games/slack-hangman/commands"
+	"github.com/slack-games/slack-server/datastore"
+	tttcmd "github.com/slack-games/slack-tictactoe/commands"
 )
 
 var index, failTemplate, successTemplate *template.Template
@@ -41,6 +42,7 @@ type Config struct {
 	SlackToken string
 	ClientID   string
 	SecretKey  string
+	BasePath   string
 }
 
 // AppContext holds reference example for database instance
@@ -294,14 +296,16 @@ func (c *AppContext) handleSlackCallback(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		// No result found, save team information
 		if err == sql.ErrNoRows {
-			_, err = datastore.NewTeam(c.db, datastore.Team{
+			team := datastore.Team{
 				TeamID:      response.Team.TeamID,
 				Name:        response.Team.Name,
 				Domain:      response.Team.Domain,
 				EmailDomain: response.Team.EmailDomain,
 				Created:     time.Now(),
 				Modified:    time.Now(),
-			})
+			}
+
+			_, err = datastore.NewTeam(c.db, team)
 
 			if err != nil {
 				log.Printf("Failed to save the team result %v\n", err)
@@ -321,6 +325,20 @@ func (c *AppContext) handleSlackCallback(w http.ResponseWriter, r *http.Request)
 	log.Println("Team ", response.Team)
 
 	http.Redirect(w, r, "/login/success", http.StatusTemporaryRedirect)
+}
+
+func (c *AppContext) actionHandler(w http.ResponseWriter, r *http.Request) {
+	result, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		log.Panicln("Could not dump request")
+	}
+	fmt.Printf("%s\n\n", result)
+
+	log.Println("Valid slack token")
+	sendResponse(w, slack.ResponseMessage{
+		Text:        "Make sure the Slack APP tokens are same",
+		Attachments: []slack.Attachment{},
+	})
 }
 
 // Router is wrap the routes
@@ -349,6 +367,9 @@ func Router(context AppContext) *mux.Router {
 	r.HandleFunc("/game/hangman/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}",
 		context.hangmanImageHandler)
 
+	actionsMiddleware := alice.New(context.debugFormValues)
+	r.Handle("/game/interactive-messages", actionsMiddleware.ThenFunc(context.actionHandler))
+
 	static := http.StripPrefix("/asset/", http.FileServer(http.Dir("./resource/")))
 	r.PathPrefix("/asset/").Handler(static)
 
@@ -373,6 +394,7 @@ func init() {
 		SlackToken: os.Getenv("APP_TOKEN"),
 		ClientID:   os.Getenv("CLIENT_ID"),
 		SecretKey:  os.Getenv("SECRET_KEY"),
+		BasePath:   os.Getenv("BASE_PATH"),
 	}
 
 	oauthConf = &oauth2.Config{
@@ -409,6 +431,6 @@ func main() {
 	loggedRouter := handlers.LoggingHandler(os.Stdout, recoveryRouter)
 	compressRouter := handlers.CompressHandler(loggedRouter)
 
-	log.Println("Starting server ...")
+	log.Printf("Starting server on port %s\n", config.Port)
 	log.Fatal(http.ListenAndServe(":"+config.Port, compressRouter))
 }

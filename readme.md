@@ -6,6 +6,12 @@ commands and team.
 
 ## Installation
 
+Dev database deploy command:
+
+```
+psql -h localhost -p 5432 -U user -P password -f data/deploy.sql
+```
+
 ## Config
 
 Env variables to change:

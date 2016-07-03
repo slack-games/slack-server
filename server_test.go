@@ -12,10 +12,11 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/riston/slack-server/slack"
+	"github.com/slack-games/slack-client"
 )
 
 var db *sqlx.DB
+var myConfig Config
 
 func SetUpDatabase(db *sqlx.DB) {
 	//load the latest schema
@@ -53,7 +54,7 @@ func Request(values url.Values) (*slack.ResponseMessage, error) {
 		"application/x-www-form-urlencoded;",
 	)
 	w := httptest.NewRecorder()
-	context := AppContext{db}
+	context := AppContext{db, myConfig}
 	Router(context).ServeHTTP(w, r)
 
 	var response *slack.ResponseMessage
@@ -66,6 +67,10 @@ func Request(values url.Values) (*slack.ResponseMessage, error) {
 }
 
 func TestMain(m *testing.M) {
+	myConfig = Config{
+		DBUrl: os.Getenv("DB_TEST"),
+	}
+
 	db = sqlx.MustConnect("postgres", os.Getenv("DB_TEST"))
 	fmt.Println("Setup DB")
 	SetUpDatabase(db)
@@ -83,7 +88,7 @@ func TestRandomPage(t *testing.T) {
 		"application/x-www-form-urlencoded",
 	)
 	w := httptest.NewRecorder()
-	context := AppContext{db}
+	context := AppContext{db, config}
 	Router(context).ServeHTTP(w, r)
 
 	if w.Code != 404 {
