@@ -15,14 +15,8 @@ section {
 }
 
 footer {
-    padding: 2.5rem;
-    margin: 0;
-    border-radius: 3em;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border: 3px solid #673AB7;
-    border-bottom: 0;
-    text-align: center;
+    border-top: 1px solid #ddd;
+    padding: 2.5rem 0;
 }
 
 .demo-button {
@@ -36,7 +30,7 @@ footer {
 }
 
 .add-button {
-    background: #F44336;
+    background: #673AB7;
     color: #F9F9F9;
     font-size: 1em;
 }
@@ -52,7 +46,7 @@ footer {
 
     font-size: 12px;
     border-radius: 4px;
-    background: #FF9800;
+    background: #673AB7;
     color: #FFF;
     font-weight: bold;
     padding: 4px;
