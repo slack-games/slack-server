@@ -79,7 +79,7 @@ func (c *AppContext) slackTokenHandler(next http.Handler) http.Handler {
 	})
 }
 
-func (c *AppContext) isGameCommandHandler(next http.Handler) http.Handler {
+func (c *AppContext) isGameTTTCommandHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		command := r.PostFormValue("command")
 
@@ -91,7 +91,24 @@ func (c *AppContext) isGameCommandHandler(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Println("Valid game command found")
+		log.Println("Valid ttt game command found")
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (c *AppContext) isGameHngCommandHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		command := r.PostFormValue("command")
+
+		if command != "/hng" {
+			sendResponse(w, slack.ResponseMessage{
+				Text:        "Make sure you have command set to /hng",
+				Attachments: []slack.Attachment{},
+			})
+			return
+		}
+
+		log.Println("Valid hng game command found")
 		next.ServeHTTP(w, r)
 	})
 }
@@ -367,14 +384,20 @@ func Router(context AppContext) *mux.Router {
 	r.HandleFunc("/login/slack/callback", context.handleSlackCallback)
 
 	// Game command handling path
-	gameMiddleware := alice.New(context.slackTokenHandler, context.isGameCommandHandler)
+	gameMiddleware := alice.New(
+		context.slackTokenHandler,
+		context.isGameTTTCommandHandler,
+	)
 	r.Handle("/game/tictactoe", gameMiddleware.ThenFunc(context.tictactoeGameHandler))
-
-	hangmanGameMiddleware := alice.New(context.debugFormValues)
 	// Id example 95cccffc-de50-4cd8-9ac7-74b52c6f306e
 	r.HandleFunc("/game/tictactoe/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}",
 		context.tictactoeImageHandler)
 
+	hangmanGameMiddleware := alice.New(
+		context.debugFormValues,
+		context.slackTokenHandler,
+		context.isGameHngCommandHandler,
+	)
 	r.Handle("/game/hangman", hangmanGameMiddleware.ThenFunc(context.hangmanGameHandler))
 	r.HandleFunc("/game/hangman/image/{id:\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}}",
 		context.hangmanImageHandler)
