@@ -81,7 +81,7 @@ func MoveCommand(db *sqlx.DB, userID string, spot uint8) slack.ResponseMessage {
 
 	return slack.ResponseMessage{
 		Text: fmt.Sprintf(":space_invader: You (%s) made move to *[%d]*, opponent (%s) made next move to *[%d]*, state *'%s'*",
-			userSymbol, spot, opponentSymbol, freeSpot.ToMove(), newState.Mode),
+			userSymbol, spot+1, opponentSymbol, freeSpot.ToMove()+1, newState.Mode),
 		Attachments: []slack.Attachment{
 			slack.Attachment{
 				Title:    "The current game state",

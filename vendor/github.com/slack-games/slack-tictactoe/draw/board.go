@@ -1,9 +1,12 @@
 package draw
 
 import (
+	"fmt"
 	"image"
 	"image/color"
+	"log"
 	"math"
+	"os"
 
 	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dimg"
@@ -94,10 +97,11 @@ func DrawSpot(gc *draw2dimg.GraphicContext, board tictactoe.Board) {
 			}
 
 			// Draw spot number
-			// gc.SetFillColor(image.Black)
-			// gc.SetLineWidth(1)
-			// gc.StrokeStringAt(fmt.Sprintf("%d", index), xPos+hCell-15, yPos+hCell-15)
-			// gc.FillStroke()
+			gc.Save()
+			gc.SetFontSize(14)
+			gc.SetFillColor(color.Black)
+			gc.FillStringAt(fmt.Sprintf("%d", index+1), xPos+hCell-15, yPos+hCell-15)
+			gc.Restore()
 			index++
 		}
 	}
@@ -173,15 +177,19 @@ func Draw(game *tictactoe.TicTacToe) image.Image {
 	dest := image.NewRGBA(image.Rect(0, 0, Width, Height))
 	gc := draw2dimg.NewGraphicContext(dest)
 
+	fontPath := os.Getenv("FONT_PATH")
+	if fontPath == "" {
+		log.Fatalln("No FONT_PATH has been set")
+	}
+
 	// Draw letters
-	// draw2d.SetFontFolder(fontPath)
-	//
-	// gc.SetFontData(draw2d.FontData{
-	// 	Name:   "luxi",
-	// 	Family: draw2d.FontFamilyMono,
-	// 	Style:  draw2d.FontStyleNormal,
-	// })
-	// gc.SetFontSize(9)
+	draw2d.SetFontFolder(fontPath)
+
+	gc.SetFontData(draw2d.FontData{
+		Name:   "Surface",
+		Family: draw2d.FontFamilySans,
+		Style:  draw2d.FontStyleBold,
+	})
 
 	// Set some properties
 	gc.SetFillColor(color.Transparent)

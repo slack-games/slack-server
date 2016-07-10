@@ -1,22 +1,62 @@
 
 #hero {
-    background-color: rgba(167, 189, 177, 0.14);
     border-radius: 1rem;
     padding: 2.5rem;
+    margin: 0;
+    border-radius: 3em;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border: 3px solid #673AB7;
+    border-top: 0;
 }
 
 section {
     margin-top: 5%;
 }
 
+footer {
+    padding: 2.5rem;
+    margin: 0;
+    border-radius: 3em;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: 3px solid #673AB7;
+    border-bottom: 0;
+    text-align: center;
+}
+
 .demo-button {
-    background: #4BD045;
+    background: #673AB7;
     color: #F9F9F9;
 }
 
-.add-button {
-    background: #4BD045;
+.demo-button:hover, .add-button:hover {
     color: #F9F9F9;
+    text-decoration: underline;
+}
+
+.add-button {
+    background: #F44336;
+    color: #F9F9F9;
+    font-size: 1em;
+}
+
+.brand {
+    position: relative;
+}
+
+.brand > span {
+    position: absolute;
+    top: -7px;
+    left: 250px;
+
+    font-size: 12px;
+    border-radius: 4px;
+    background: #FF9800;
+    color: #FFF;
+    font-weight: bold;
+    padding: 4px;
+    letter-spacing: 1px;
 }
 
 .u-max-full-width {

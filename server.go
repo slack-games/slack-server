@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image/png"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -43,6 +44,16 @@ type Config struct {
 	ClientID   string
 	SecretKey  string
 	BasePath   string
+}
+
+func randomString(strlen int) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	result := make([]byte, strlen)
+	for i := 0; i < strlen; i++ {
+		result[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(result)
 }
 
 // AppContext holds reference example for database instance
@@ -150,7 +161,8 @@ func (c *AppContext) tictactoeGameHandler(w http.ResponseWriter, r *http.Request
 		strNumber := moveRegexp.FindStringSubmatch(text)[1]
 		moveTo, _ := strconv.ParseInt(strNumber, 10, 8)
 
-		message = tttcmd.MoveCommand(c.db, userID, uint8(moveTo))
+		// -1 the move number as we use th indexing from 0 to 8 in development
+		message = tttcmd.MoveCommand(c.db, userID, uint8(moveTo)-1)
 	}
 
 	sendResponse(w, message)
@@ -404,7 +416,7 @@ func init() {
 		Endpoint:     slackoauth.Endpoint,
 	}
 	// random string for oauth2 API calls to protect against CSRF
-	oauthState = "thisshouldberandom"
+	oauthState = randomString(33)
 
 	index = template.Must(template.ParseFiles(
 		"templates/layout.html",

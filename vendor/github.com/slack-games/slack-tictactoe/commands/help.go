@@ -28,7 +28,7 @@ func HelpCommand() slack.ResponseMessage {
 			Color: "#004FDD",
 		},
 		slack.Attachment{
-			Title: "/ttt help - Shows the help message",
+			Title: "/ttt help - Shows help message",
 			Color: "#76A0A0",
 		},
 	}

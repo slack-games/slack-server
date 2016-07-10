@@ -66,16 +66,16 @@
 			"revisionTime": "2016-03-01T08:54:26Z"
 		},
 		{
-			"checksumSHA1": "SIuDINVRGtvLZyzKJbU1YN90sMA=",
+			"checksumSHA1": "QK3MNUdQwUBuznCHZcPijU/3DyI=",
 			"path": "github.com/lib/pq",
-			"revision": "8ad2b298cadd691a77015666a5372eae5dbfac8f",
-			"revisionTime": "2016-01-14T15:24:13Z"
+			"revision": "4dd446efc17690bc53e154025146f73203b18309",
+			"revisionTime": "2016-06-23T22:06:37Z"
 		},
 		{
 			"checksumSHA1": "xppHi82MLqVx1eyQmbhTesAEjx8=",
 			"path": "github.com/lib/pq/oid",
-			"revision": "8ad2b298cadd691a77015666a5372eae5dbfac8f",
-			"revisionTime": "2016-01-14T15:24:13Z"
+			"revision": "4dd446efc17690bc53e154025146f73203b18309",
+			"revisionTime": "2016-06-23T22:06:37Z"
 		},
 		{
 			"checksumSHA1": "aRDMOm3ibMxRFRTHFxBgHrf8NMg=",
@@ -104,56 +104,56 @@
 		{
 			"checksumSHA1": "riSlvvVTeugtl9nCnYPChuM9M4E=",
 			"path": "github.com/slack-games/slack-client",
-			"revision": "72f9e7e3870fe0405bcf0ad5221c8dd69bf3b103",
-			"revisionTime": "2016-07-05T21:10:53Z"
+			"revision": "1ddb4993b2aad8ce8bb1b2a12b297feee9a41c49",
+			"revisionTime": "2016-07-06T20:43:07Z"
 		},
 		{
 			"checksumSHA1": "jL2x3FPSz756SsV/txrJ4zFZTkg=",
 			"path": "github.com/slack-games/slack-hangman",
-			"revision": "ccd14c3f19802e822cdc0a18e77de74f11ff4f38",
-			"revisionTime": "2016-07-05T21:17:09Z"
+			"revision": "9358e86140d2ecd482258a8a60f002c02915f248",
+			"revisionTime": "2016-07-06T20:43:25Z"
 		},
 		{
 			"checksumSHA1": "mVrfYODmqLwk1ayPWb4Qdnhtqhg=",
 			"path": "github.com/slack-games/slack-hangman/commands",
-			"revision": "ccd14c3f19802e822cdc0a18e77de74f11ff4f38",
-			"revisionTime": "2016-07-05T21:17:09Z"
+			"revision": "9358e86140d2ecd482258a8a60f002c02915f248",
+			"revisionTime": "2016-07-06T20:43:25Z"
 		},
 		{
 			"checksumSHA1": "xrTjGCA9Ui9+rAGytHTV8vJ0Gek=",
 			"path": "github.com/slack-games/slack-hangman/datastore",
-			"revision": "ccd14c3f19802e822cdc0a18e77de74f11ff4f38",
-			"revisionTime": "2016-07-05T21:17:09Z"
+			"revision": "9358e86140d2ecd482258a8a60f002c02915f248",
+			"revisionTime": "2016-07-06T20:43:25Z"
 		},
 		{
 			"checksumSHA1": "/Mze6fDlS6biSFavvqr9aXmy/a4=",
 			"path": "github.com/slack-games/slack-hangman/draw",
-			"revision": "ccd14c3f19802e822cdc0a18e77de74f11ff4f38",
-			"revisionTime": "2016-07-05T21:17:09Z"
+			"revision": "9358e86140d2ecd482258a8a60f002c02915f248",
+			"revisionTime": "2016-07-06T20:43:25Z"
 		},
 		{
 			"checksumSHA1": "emX+/JxQjgeZoMUwl8ntep1C7wA=",
 			"path": "github.com/slack-games/slack-tictactoe",
-			"revision": "8eec74d1ae1f4f6defb3e8e5dbba4123695e3b6a",
-			"revisionTime": "2016-07-05T21:17:19Z"
+			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
+			"revisionTime": "2016-07-09T09:07:23Z"
 		},
 		{
-			"checksumSHA1": "KyorLzUGzBS933YJoHBwU38Bkhw=",
+			"checksumSHA1": "PdY/NbggD8gNy4yZhu2nAFE9J0U=",
 			"path": "github.com/slack-games/slack-tictactoe/commands",
-			"revision": "8eec74d1ae1f4f6defb3e8e5dbba4123695e3b6a",
-			"revisionTime": "2016-07-05T21:17:19Z"
+			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
+			"revisionTime": "2016-07-09T09:07:23Z"
 		},
 		{
 			"checksumSHA1": "ajm0A4TUjrTqzkHsUY6uCeF2whQ=",
 			"path": "github.com/slack-games/slack-tictactoe/datastore",
-			"revision": "8eec74d1ae1f4f6defb3e8e5dbba4123695e3b6a",
-			"revisionTime": "2016-07-05T21:17:19Z"
+			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
+			"revisionTime": "2016-07-09T09:07:23Z"
 		},
 		{
-			"checksumSHA1": "KfXFCr4BCTWSCQWxHK5a1rRwDa4=",
+			"checksumSHA1": "2vGs9z7aP3VBLL+QjMwImP/HzaQ=",
 			"path": "github.com/slack-games/slack-tictactoe/draw",
-			"revision": "8eec74d1ae1f4f6defb3e8e5dbba4123695e3b6a",
-			"revisionTime": "2016-07-05T21:17:19Z"
+			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
+			"revisionTime": "2016-07-09T09:07:23Z"
 		},
 		{
 			"checksumSHA1": "7E3Y1HU/UbsQF/dxMRdjFmx9QDQ=",
@@ -180,10 +180,10 @@
 			"revisionTime": "2016-06-26T06:52:26Z"
 		},
 		{
-			"checksumSHA1": "hKZGpbFuCrkE4s1vxubKK1aFlfI=",
+			"checksumSHA1": "9jjO5GjLa0XF/nfWihF02RoH4qc=",
 			"path": "golang.org/x/net/context",
-			"revision": "933937213561306ee71d265fb8a2913f20a55123",
-			"revisionTime": "2015-06-13T19:43:12Z"
+			"revision": "7864c9eef811cd4e2387a4d17eaf985e412b5032",
+			"revisionTime": "2016-07-07T01:31:09Z"
 		},
 		{
 			"checksumSHA1": "mktBVED98G2vv+OKcSgtnFVZC1Y=",

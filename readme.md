@@ -4,6 +4,7 @@
 Contains the HTTP glue code for the multiple games also the OAuth login to register
 commands and team.
 
+
 ## Installation
 
 Dev database deploy command:
@@ -11,6 +12,12 @@ Dev database deploy command:
 ```
 psql -h localhost -p 5432 -U user -P password -f data/deploy.sql
 ```
+
+Example of the Heroku DB init:
+```
+heroku pg:psql --app brain-games < data/deploy.sql
+```
+
 
 ## Config
 
@@ -36,6 +43,14 @@ SECRET_KEY=dsfdsfds76afc938f54399231321321
 # Verification token from Slack registration
 APP_TOKEN=dsfaferwafergdfsrtgh
 ```
+
+
+# TODO
+
+  - [x] Add the move numbers to TTT board
+  - Validation for the POST input
+  - Fix the redirect urls and base path for different envs
+
 
 ## Queries
 ```
