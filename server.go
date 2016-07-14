@@ -15,11 +15,14 @@ import (
 	"text/template"
 	"time"
 
+	"gopkg.in/go-playground/validator.v8"
+
 	"golang.org/x/oauth2"
 	slackoauth "golang.org/x/oauth2/slack"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/justinas/alice"
@@ -34,6 +37,8 @@ var index, failTemplate, successTemplate *template.Template
 var oauthConf *oauth2.Config
 var config Config
 var oauthState string
+var decoder *schema.Decoder
+var validate *validator.Validate
 
 // Config needed config to run the application
 type Config struct {
@@ -44,6 +49,17 @@ type Config struct {
 	ClientID   string
 	SecretKey  string
 	BasePath   string
+}
+
+// CommandInput user input for the game commands
+type CommandInput struct {
+	ChannelName string `schema:"channel_name" validate:"required"`
+	ChannelID   string `schema:"channel_id" validate:"required,alphanum"`
+	TeamID      string `schema:"team_id" validate:"required,alphanum"`
+	UserID      string `schema:"user_id" validate:"required,alphanum"`
+	Text        string `schema:"text" validate:"required"`
+	Domain      string `schema:"team_domain" validate:"required"`
+	Name        string `schema:"user_name" validate:"required"`
 }
 
 func randomString(strlen int) string {
@@ -117,7 +133,7 @@ func (c *AppContext) debugFormValues(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Show keys for debugging
 		log.Println("> Form debug starts here")
-		for key, value := range r.Form {
+		for key, value := range r.PostForm {
 			log.Printf("\tkey: %s value: %s\n", key, value)
 		}
 		log.Println("> Headers ends here")
@@ -188,40 +204,64 @@ func (c *AppContext) tictactoeGameHandler(w http.ResponseWriter, r *http.Request
 func (c *AppContext) hangmanGameHandler(w http.ResponseWriter, r *http.Request) {
 	var message slack.ResponseMessage
 
-	// Authentication, check the token, team id and user id
-	text := r.PostFormValue("text")
-	domain := r.PostFormValue("team_domain")
-	teamID := r.PostFormValue("team_id")
-	userID := r.PostFormValue("user_id")
-	name := r.PostFormValue("user_name")
+	inputError := slack.ResponseMessage{
+		Text: "Could not parse the game input",
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		sendResponse(w, inputError)
+		return
+	}
+
+	input := &CommandInput{}
+	decoder.IgnoreUnknownKeys(true)
+
+	// r.PostForm is a map of our POST form values
+	err = decoder.Decode(input, r.PostForm)
+	if err != nil {
+		log.Println(err)
+		sendResponse(w, inputError)
+		return
+	}
+
+	// Validation
+	err = validate.Struct(input)
+	if err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		log.Println(validationErrors)
+		sendResponse(w, inputError)
+		return
+	}
 
 	guessRegexp, _ := regexp.Compile("^guess ([a-z])$")
 
 	// TODO: Move the user get and create to middleware ?
-	user, err := datastore.GetOrSaveNew(c.db, userID, teamID, name, domain)
+	user, err := datastore.GetOrSaveNew(c.db, input.UserID, input.TeamID, input.Name, input.Domain)
 	if err != nil {
-		log.Fatalln("Could not save or get the user", userID, err)
+		log.Fatalln("Could not save or get the user", input.UserID, err)
 	}
 	fmt.Println("User", user)
 
-	switch text {
+	switch input.Text {
 	case "start":
 		// Starts the new game
-		message = hngcmd.StartCommand(c.db, userID)
+		message = hngcmd.StartCommand(c.db, input.UserID)
 	case "current":
 		// Return the current game state, with information of previous move
-		message = hngcmd.CurrentCommand(c.db, userID)
+		message = hngcmd.CurrentCommand(c.db, input.UserID)
 	case "ping":
 		// Starts the new game
 		message = hngcmd.PingCommand()
 	}
 
 	// Make turn on board and get back the response
-	if guessRegexp.MatchString(text) {
+	if guessRegexp.MatchString(input.Text) {
 		// Second element hold character
-		guess := guessRegexp.FindStringSubmatch(text)[1]
+		guess := guessRegexp.FindStringSubmatch(input.Text)[1]
 
-		message = hngcmd.GuessCommand(c.db, userID, rune(guess[0]))
+		message = hngcmd.GuessCommand(c.db, input.UserID, rune(guess[0]))
 	}
 
 	sendResponse(w, message)
@@ -385,6 +425,7 @@ func Router(context AppContext) *mux.Router {
 
 	// Game command handling path
 	gameMiddleware := alice.New(
+		context.debugFormValues,
 		context.slackTokenHandler,
 		context.isGameTTTCommandHandler,
 	)
@@ -438,8 +479,13 @@ func init() {
 		Scopes:       []string{"team:read", "commands"},
 		Endpoint:     slackoauth.Endpoint,
 	}
+
 	// random string for oauth2 API calls to protect against CSRF
 	oauthState = randomString(33)
+
+	decoder = schema.NewDecoder()
+
+	validate = validator.New(&validator.Config{TagName: "validate"})
 
 	index = template.Must(template.ParseFiles(
 		"templates/layout.html",
