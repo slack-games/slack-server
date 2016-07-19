@@ -13,10 +13,11 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/slack-games/slack-client"
+	"github.com/slack-games/slack-server/server"
 )
 
 var db *sqlx.DB
-var myConfig Config
+var myConfig server.Config
 
 func SetUpDatabase(db *sqlx.DB) {
 	//load the latest schema
@@ -54,7 +55,10 @@ func Request(values url.Values) (*slack.ResponseMessage, error) {
 		"application/x-www-form-urlencoded;",
 	)
 	w := httptest.NewRecorder()
-	context := AppContext{db, myConfig}
+	context := server.Context{
+		Db:     db,
+		Config: myConfig,
+	}
 	Router(context).ServeHTTP(w, r)
 
 	var response *slack.ResponseMessage
@@ -67,7 +71,7 @@ func Request(values url.Values) (*slack.ResponseMessage, error) {
 }
 
 func TestMain(m *testing.M) {
-	myConfig = Config{
+	myConfig = server.Config{
 		DBUrl: os.Getenv("DB_TEST"),
 	}
 
@@ -88,7 +92,10 @@ func TestRandomPage(t *testing.T) {
 		"application/x-www-form-urlencoded",
 	)
 	w := httptest.NewRecorder()
-	context := AppContext{db, config}
+	context := server.Context{
+		Db:     db,
+		Config: config,
+	}
 	Router(context).ServeHTTP(w, r)
 
 	if w.Code != 404 {
