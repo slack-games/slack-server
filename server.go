@@ -35,6 +35,7 @@ func Router(context server.Context) *mux.Router {
 	indexController := controller.IndexController{Context: context}
 	indexController.Register(router)
 
+	// Static assets
 	static := http.StripPrefix("/asset/", http.FileServer(http.Dir("./resource/")))
 	router.PathPrefix("/asset/").Handler(static)
 
