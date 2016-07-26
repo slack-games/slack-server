@@ -21,7 +21,7 @@ func GuessCommand(db *sqlx.DB, userID string, char rune) slack.ResponseMessage {
 		// No state found
 		if err == sql.ErrNoRows {
 			return slack.ResponseMessage{
-				Text: "You can not make any moves before the game has started `/game start`",
+				Text: "You can not make any moves before the game has started `/hng start`",
 			}
 		}
 	}
@@ -30,7 +30,7 @@ func GuessCommand(db *sqlx.DB, userID string, char rune) slack.ResponseMessage {
 	if state.Mode == "GameOver" {
 		log.Println("Game is already over")
 		return slack.ResponseMessage{
-			Text: "Current game is over, but you can always start a new game `/game start`",
+			Text: "Current game is over, but you can always start a new game `/hng start`",
 		}
 	}
 

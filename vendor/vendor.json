@@ -36,6 +36,12 @@
 			"revisionTime": "2015-05-30T19:53:56Z"
 		},
 		{
+			"checksumSHA1": "1Wm14d0Efi+hkaE9xqQpxTGM+Kg=",
+			"path": "github.com/gorilla/schema",
+			"revision": "8aac656cd31cfb73a9dfd142494864fa0b84f723",
+			"revisionTime": "2016-06-24T05:15:19Z"
+		},
+		{
 			"checksumSHA1": "K33xdaNbpTxlDZbenJzT9PzTyvM=",
 			"path": "github.com/jmoiron/sqlx",
 			"revision": "ddb3dc8bd6515cf1af155d322e01bd26a03bff18",
@@ -102,6 +108,12 @@
 			"revisionTime": "2016-06-27T19:46:37Z"
 		},
 		{
+			"checksumSHA1": "8N64Iy35FyjHKR9FtxVyx1k3SEc=",
+			"path": "github.com/riston/slack-server/datastore",
+			"revision": "83e0533e6f4e9187be48f027349a21bc4fa67693",
+			"revisionTime": "2016-04-10T19:36:04Z"
+		},
+		{
 			"checksumSHA1": "riSlvvVTeugtl9nCnYPChuM9M4E=",
 			"path": "github.com/slack-games/slack-client",
 			"revision": "1ddb4993b2aad8ce8bb1b2a12b297feee9a41c49",
@@ -114,7 +126,7 @@
 			"revisionTime": "2016-07-06T20:43:25Z"
 		},
 		{
-			"checksumSHA1": "mVrfYODmqLwk1ayPWb4Qdnhtqhg=",
+			"checksumSHA1": "CIlg27tvDNHOGSxjpk16hPki1tg=",
 			"path": "github.com/slack-games/slack-hangman/commands",
 			"revision": "9358e86140d2ecd482258a8a60f002c02915f248",
 			"revisionTime": "2016-07-06T20:43:25Z"
@@ -134,26 +146,26 @@
 		{
 			"checksumSHA1": "emX+/JxQjgeZoMUwl8ntep1C7wA=",
 			"path": "github.com/slack-games/slack-tictactoe",
-			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
-			"revisionTime": "2016-07-09T09:07:23Z"
+			"revision": "cd77beafb7352a2aa5b8c0051e565f46540c8913",
+			"revisionTime": "2016-07-10T08:35:49Z"
 		},
 		{
 			"checksumSHA1": "PdY/NbggD8gNy4yZhu2nAFE9J0U=",
 			"path": "github.com/slack-games/slack-tictactoe/commands",
-			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
-			"revisionTime": "2016-07-09T09:07:23Z"
+			"revision": "cd77beafb7352a2aa5b8c0051e565f46540c8913",
+			"revisionTime": "2016-07-10T08:35:49Z"
 		},
 		{
 			"checksumSHA1": "ajm0A4TUjrTqzkHsUY6uCeF2whQ=",
 			"path": "github.com/slack-games/slack-tictactoe/datastore",
-			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
-			"revisionTime": "2016-07-09T09:07:23Z"
+			"revision": "cd77beafb7352a2aa5b8c0051e565f46540c8913",
+			"revisionTime": "2016-07-10T08:35:49Z"
 		},
 		{
 			"checksumSHA1": "2vGs9z7aP3VBLL+QjMwImP/HzaQ=",
 			"path": "github.com/slack-games/slack-tictactoe/draw",
-			"revision": "26f203c5f7c6c98da57495a17bfe7b05587c3d96",
-			"revisionTime": "2016-07-09T09:07:23Z"
+			"revision": "cd77beafb7352a2aa5b8c0051e565f46540c8913",
+			"revisionTime": "2016-07-10T08:35:49Z"
 		},
 		{
 			"checksumSHA1": "7E3Y1HU/UbsQF/dxMRdjFmx9QDQ=",
@@ -202,6 +214,18 @@
 			"path": "golang.org/x/oauth2/slack",
 			"revision": "188fb45fbef6ffd967b3a8abcfe176fd473361df",
 			"revisionTime": "2016-02-17T19:13:47Z"
+		},
+		{
+			"checksumSHA1": "ILC59vfo9hPJiYFLZA/E4bT7298=",
+			"path": "gopkg.in/bluesuncorp/validator.v8",
+			"revision": "7a080ada5ba072a91fd7f677bcf4d0e1aa286d39",
+			"revisionTime": "2016-07-14T20:46:21Z"
+		},
+		{
+			"checksumSHA1": "1Kc7sbvcA9MOUV9q+/LLwhX2LYA=",
+			"path": "gopkg.in/go-playground/validator.v8",
+			"revision": "25f1823069d853eccffbde025dca1812fa09c14b",
+			"revisionTime": "2016-06-22T01:15:37Z"
 		}
 	],
 	"rootPath": "github.com/slack-games/slack-server"
